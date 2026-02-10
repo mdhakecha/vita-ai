@@ -47,22 +47,22 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import Home from './pages/Home';
-import Workouts from './pages/Workouts';
-import Nutrition from './pages/Nutrition';
-import Mind from './pages/Mind';
 import AICoach from './pages/AICoach';
+import Home from './pages/Home';
+import Mind from './pages/Mind';
+import Nutrition from './pages/Nutrition';
 import Profile from './pages/Profile';
+import Workouts from './pages/Workouts';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Home": Home,
-    "Workouts": Workouts,
-    "Nutrition": Nutrition,
-    "Mind": Mind,
     "AICoach": AICoach,
+    "Home": Home,
+    "Mind": Mind,
+    "Nutrition": Nutrition,
     "Profile": Profile,
+    "Workouts": Workouts,
 }
 
 export const pagesConfig = {

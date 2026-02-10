@@ -12,6 +12,7 @@ import AIInsightCard from "@/components/dashboard/AIInsightCard";
 import QuickActions from "@/components/dashboard/QuickActions";
 import ActivityRing from "@/components/dashboard/ActivityRing";
 import MoodLogger from "@/components/mind/MoodLogger";
+import Logo from "@/components/ui/Logo";
 
 export default function Home() {
   const [showMoodLogger, setShowMoodLogger] = useState(false);
@@ -139,21 +140,24 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between mb-8"
+          className="mb-8"
         >
+          <div className="flex items-center justify-between mb-6">
+            <Logo size="sm" showText={true} />
+            <motion.div
+              whileTap={{ scale: 0.95 }}
+              className="relative p-3 rounded-2xl bg-white dark:bg-slate-800 shadow-lg shadow-black/5"
+            >
+              <Bell className="w-5 h-5 text-slate-600 dark:text-slate-300" />
+              <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full" />
+            </motion.div>
+          </div>
           <div>
-            <p className="text-slate-500 text-sm font-medium">{greeting}</p>
-            <h1 className="text-2xl font-bold text-slate-800">
+            <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">{greeting}</p>
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-white">
               {user?.full_name?.split(" ")[0] || "there"} 👋
             </h1>
           </div>
-          <motion.div
-            whileTap={{ scale: 0.95 }}
-            className="relative p-3 rounded-2xl bg-white shadow-lg shadow-black/5"
-          >
-            <Bell className="w-5 h-5 text-slate-600" />
-            <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full" />
-          </motion.div>
         </motion.div>
 
         {/* Activity Rings */}
