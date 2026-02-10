@@ -2,8 +2,30 @@ import { motion } from "framer-motion";
 import { Download, Smartphone, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/ui/Logo";
+import html2canvas from "html2canvas";
+import { useRef } from "react";
 
 export default function AppStoreAssets() {
+  const iconRefs = useRef([]);
+  const screenshotRefs = useRef([]);
+  const bannerRef = useRef(null);
+
+  const downloadElement = async (element, filename, width, height) => {
+    if (!element) return;
+    
+    const canvas = await html2canvas(element, {
+      width,
+      height,
+      scale: 2,
+      backgroundColor: null,
+    });
+    
+    const link = document.createElement("a");
+    link.download = filename;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  };
+
   const appIcon = () => (
     <div className="w-full aspect-square rounded-[22%] bg-gradient-to-br from-rose-500 via-violet-500 to-purple-600 flex items-center justify-center relative overflow-hidden shadow-2xl">
       <div className="absolute inset-0 bg-gradient-to-br from-orange-400/30 to-pink-500/30 blur-2xl" />
@@ -176,14 +198,23 @@ export default function AppStoreAssets() {
         >
           <h2 className="text-2xl font-bold mb-6 text-slate-800">App Icon</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[1024, 512, 256, 180].map((size) => (
+            {[1024, 512, 256, 180].map((size, idx) => (
               <div key={size} className="space-y-3">
-                <div className="aspect-square bg-white rounded-2xl shadow-2xl p-6">
+                <div 
+                  ref={el => iconRefs.current[idx] = el}
+                  className="aspect-square bg-white rounded-2xl shadow-2xl p-6"
+                  style={{ width: size, height: size }}
+                >
                   {appIcon()}
                 </div>
                 <div className="text-center">
                   <p className="font-semibold text-slate-700">{size}x{size}px</p>
-                  <Button size="sm" variant="outline" className="mt-2 w-full">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="mt-2 w-full"
+                    onClick={() => downloadElement(iconRefs.current[idx], `vita-ai-icon-${size}.png`, size, size)}
+                  >
                     <Download className="w-4 h-4 mr-2" />
                     Download
                   </Button>
@@ -210,7 +241,11 @@ export default function AppStoreAssets() {
                 transition={{ delay: 0.1 * idx }}
                 className="space-y-4"
               >
-                <div className="relative aspect-[9/19.5] bg-black rounded-[3rem] p-3 shadow-2xl">
+                <div 
+                  ref={el => screenshotRefs.current[idx] = el}
+                  className="relative aspect-[9/19.5] bg-black rounded-[3rem] p-3 shadow-2xl"
+                  style={{ width: 390, height: 844 }}
+                >
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-black rounded-b-2xl z-10" />
                   <div className={`w-full h-full rounded-[2.5rem] overflow-hidden bg-gradient-to-br ${screen.bg}`}>
                     {screen.content}
@@ -218,7 +253,12 @@ export default function AppStoreAssets() {
                 </div>
                 <div className="text-center">
                   <p className="font-semibold text-slate-700 mb-2">{screen.title}</p>
-                  <Button size="sm" variant="outline" className="w-full">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => downloadElement(screenshotRefs.current[idx], `vita-ai-screenshot-${idx + 1}.png`, 1242, 2688)}
+                  >
                     <Download className="w-4 h-4 mr-2" />
                     Download PNG
                   </Button>
@@ -236,7 +276,10 @@ export default function AppStoreAssets() {
           className="mb-16"
         >
           <h2 className="text-2xl font-bold mb-6 text-slate-800">Promotional Banner</h2>
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-500 via-violet-500 to-purple-600 p-12 shadow-2xl">
+          <div 
+            ref={bannerRef}
+            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-500 via-violet-500 to-purple-600 p-12 shadow-2xl"
+          >
             <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
             <div className="relative z-10 grid md:grid-cols-2 gap-8 items-center">
               <div className="text-white">
@@ -267,7 +310,11 @@ export default function AppStoreAssets() {
             </div>
           </div>
           <div className="text-center mt-4">
-            <Button variant="outline" className="w-full md:w-auto">
+            <Button 
+              variant="outline" 
+              className="w-full md:w-auto"
+              onClick={() => downloadElement(bannerRef.current, "vita-ai-banner.png", 1200, 628)}
+            >
               <Download className="w-4 h-4 mr-2" />
               Download Banner (1200x628px)
             </Button>
