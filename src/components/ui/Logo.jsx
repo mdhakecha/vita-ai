@@ -57,9 +57,6 @@ export default function Logo({ size = "md", showText = true, animated = false })
         animate={animated ? { opacity: 1, x: 0 } : {}}
         transition={{ delay: 0.3 }}
       >
-        <h1 className={`font-bold bg-gradient-to-r from-rose-500 via-violet-500 to-purple-600 bg-clip-text text-transparent ${currentSize.text}`}>
-          VITA AI
-        </h1>
         {size !== 'sm' && (
           <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
             Your Health Companion
