@@ -1,15 +1,19 @@
-import { useState } from "react";
+import { useState, useOptimistic } from "react";
 import { motion } from "framer-motion";
 import { Droplets, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function WaterTracker({ current = 0, goal = 2500, onUpdate }) {
+  const [optimisticWater, setOptimisticWater] = useOptimistic(current);
   const glassSize = 250; // ml per glass
-  const glasses = Math.floor(current / glassSize);
-  const progress = Math.min((current / goal) * 100, 100);
+  const displayWater = optimisticWater || current;
+  const glasses = Math.floor(displayWater / glassSize);
+  const progress = Math.min((displayWater / goal) * 100, 100);
 
   const addWater = (amount) => {
-    onUpdate(Math.max(0, current + amount));
+    const newAmount = Math.max(0, displayWater + amount);
+    setOptimisticWater(newAmount);
+    onUpdate(newAmount);
   };
 
   return (
@@ -25,7 +29,7 @@ export default function WaterTracker({ current = 0, goal = 2500, onUpdate }) {
             <span className="text-sm font-medium text-slate-600">Water Intake</span>
           </div>
           <div className="flex items-baseline gap-1">
-            <span className="text-3xl font-bold text-slate-800">{current}</span>
+            <span className="text-3xl font-bold text-slate-800">{displayWater}</span>
             <span className="text-slate-500">/ {goal} ml</span>
           </div>
         </div>
@@ -66,7 +70,7 @@ export default function WaterTracker({ current = 0, goal = 2500, onUpdate }) {
           size="sm"
           onClick={() => addWater(-glassSize)}
           className="flex-1 border-blue-200 text-blue-600 hover:bg-blue-50"
-          disabled={current <= 0}
+          disabled={displayWater <= 0}
         >
           <Minus className="w-4 h-4 mr-1" />
           250ml

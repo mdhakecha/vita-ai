@@ -84,6 +84,16 @@ export default function Layout({ children, currentPageName }) {
           padding-bottom: env(safe-area-inset-bottom, 8px);
         }
         
+        /* Mobile optimizations */
+        body {
+          overscroll-behavior-y: none;
+        }
+        
+        nav, button, .nav-item {
+          user-select: none;
+          -webkit-user-select: none;
+        }
+        
         /* Custom scrollbar */
         ::-webkit-scrollbar {
           width: 4px;
@@ -101,6 +111,15 @@ export default function Layout({ children, currentPageName }) {
         /* Smooth transitions */
         * {
           -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Dark mode */
+        .dark {
+          color-scheme: dark;
+        }
+        
+        .dark body {
+          background: #0f172a;
         }
       `}</style>
     </div>
