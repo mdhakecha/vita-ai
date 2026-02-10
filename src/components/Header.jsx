@@ -10,15 +10,7 @@ export default function Header({ currentPageName }) {
   const isRootPage = rootPages.includes(currentPageName);
 
   if (isRootPage) {
-    return (
-      <motion.header
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="px-4 py-4"
-      >
-        <Logo size="sm" animated showText />
-      </motion.header>
-    );
+    return null;
   }
 
   return (
