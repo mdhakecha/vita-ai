@@ -53,6 +53,7 @@ import Nutrition from './pages/Nutrition';
 import Mind from './pages/Mind';
 import AICoach from './pages/AICoach';
 import Profile from './pages/Profile';
+import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
@@ -67,4 +68,5 @@ export const PAGES = {
 export const pagesConfig = {
     mainPage: "Home",
     Pages: PAGES,
+    Layout: __Layout,
 };

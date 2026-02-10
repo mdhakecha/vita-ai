@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Footprints, Flame, Clock, Heart, Bell } from "lucide-react";
+import { Footprints, Flame, Clock, Heart, Bell, RefreshCw } from "lucide-react";
 
 import MetricCard from "@/components/dashboard/MetricCard";
 import MoodWidget from "@/components/dashboard/MoodWidget";
@@ -16,6 +16,9 @@ import MoodLogger from "@/components/mind/MoodLogger";
 export default function Home() {
   const [showMoodLogger, setShowMoodLogger] = useState(false);
   const [greeting, setGreeting] = useState("");
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [pullDistance, setPullDistance] = useState(0);
+  const touchStartY = useRef(0);
   const queryClient = useQueryClient();
   const today = format(new Date(), "yyyy-MM-dd");
 
@@ -51,7 +54,16 @@ export default function Home() {
 
   const saveMoodMutation = useMutation({
     mutationFn: (data) => base44.entities.MoodEntry.create(data),
-    onSuccess: () => {
+    onMutate: async (newMood) => {
+      await queryClient.cancelQueries(["moodEntries", today]);
+      const previousMoods = queryClient.getQueryData(["moodEntries", today]);
+      queryClient.setQueryData(["moodEntries", today], (old) => [newMood, ...(old || [])]);
+      return { previousMoods };
+    },
+    onError: (err, newMood, context) => {
+      queryClient.setQueryData(["moodEntries", today], context.previousMoods);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries(["moodEntries"]);
       setShowMoodLogger(false);
     },
@@ -68,9 +80,61 @@ export default function Home() {
     sleep: userProfile.sleep_goal_hours || 8,
   };
 
+  const handleTouchStart = (e) => {
+    if (window.scrollY === 0) {
+      touchStartY.current = e.touches[0].clientY;
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (window.scrollY === 0 && !isRefreshing) {
+      const currentY = e.touches[0].clientY;
+      const distance = currentY - touchStartY.current;
+      if (distance > 0) {
+        setPullDistance(Math.min(distance, 120));
+      }
+    }
+  };
+
+  const handleTouchEnd = async () => {
+    if (pullDistance > 80 && !isRefreshing) {
+      setIsRefreshing(true);
+      await Promise.all([
+        queryClient.invalidateQueries(["healthMetrics"]),
+        queryClient.invalidateQueries(["moodEntries"]),
+        queryClient.invalidateQueries(["userProfile"]),
+      ]);
+      setTimeout(() => {
+        setIsRefreshing(false);
+        setPullDistance(0);
+      }, 500);
+    } else {
+      setPullDistance(0);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-rose-50/30 to-orange-50/30">
+    <div 
+      className="min-h-screen bg-gradient-to-br from-slate-50 via-rose-50/30 to-orange-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       <div className="max-w-lg mx-auto px-4 py-6 pb-24">
+        {/* Pull to Refresh Indicator */}
+        {pullDistance > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: pullDistance / 80, y: pullDistance / 2 }}
+            className="flex justify-center mb-4"
+          >
+            <RefreshCw 
+              className={`w-6 h-6 text-rose-500 ${isRefreshing ? 'animate-spin' : ''}`}
+              style={{ transform: `rotate(${pullDistance * 3}deg)` }}
+            />
+          </motion.div>
+        )}
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}

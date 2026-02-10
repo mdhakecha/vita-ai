@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Search, Filter, Dumbbell, Play, X, Clock, Flame, ChevronRight } from "lucide-react";
+import { Search, Filter, Dumbbell, Play, X, Clock, Flame, ChevronRight, RefreshCw } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,6 +14,9 @@ export default function Workouts() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeType, setActiveType] = useState("all");
   const [selectedWorkout, setSelectedWorkout] = useState(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [pullDistance, setPullDistance] = useState(0);
+  const touchStartY = useRef(0);
   const queryClient = useQueryClient();
 
   const { data: workouts = [], isLoading } = useQuery({
@@ -46,9 +49,57 @@ export default function Workouts() {
 
   const isPremium = userProfile?.is_premium;
 
+  const handleTouchStart = (e) => {
+    if (window.scrollY === 0) {
+      touchStartY.current = e.touches[0].clientY;
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (window.scrollY === 0 && !isRefreshing) {
+      const currentY = e.touches[0].clientY;
+      const distance = currentY - touchStartY.current;
+      if (distance > 0) {
+        setPullDistance(Math.min(distance, 120));
+      }
+    }
+  };
+
+  const handleTouchEnd = async () => {
+    if (pullDistance > 80 && !isRefreshing) {
+      setIsRefreshing(true);
+      await queryClient.invalidateQueries(["workouts"]);
+      setTimeout(() => {
+        setIsRefreshing(false);
+        setPullDistance(0);
+      }, 500);
+    } else {
+      setPullDistance(0);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-rose-50/30 to-orange-50/30">
+    <div 
+      className="min-h-screen bg-gradient-to-br from-slate-50 via-rose-50/30 to-orange-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       <div className="max-w-lg mx-auto px-4 py-6 pb-24">
+        {/* Pull to Refresh Indicator */}
+        {pullDistance > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: pullDistance / 80, y: pullDistance / 2 }}
+            className="flex justify-center mb-4"
+          >
+            <RefreshCw 
+              className={`w-6 h-6 text-rose-500 ${isRefreshing ? 'animate-spin' : ''}`}
+              style={{ transform: `rotate(${pullDistance * 3}deg)` }}
+            />
+          </motion.div>
+        )}
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}

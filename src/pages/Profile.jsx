@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   User, Settings, Target, Ruler, Scale, Activity, 
   Moon, Droplets, Flame, Crown, ChevronRight, LogOut,
-  Bell, Shield, HelpCircle, Star
+  Bell, Shield, HelpCircle, Star, Trash2, AlertTriangle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +32,7 @@ const activityLevels = [
 
 export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [formData, setFormData] = useState({});
   const queryClient = useQueryClient();
 
@@ -73,6 +74,32 @@ export default function Profile() {
     base44.auth.logout();
   };
 
+  const deleteAccountMutation = useMutation({
+    mutationFn: async () => {
+      if (profile) {
+        await base44.entities.UserProfile.delete(profile.id);
+      }
+      const [metrics, moods, workouts, meals, conversations] = await Promise.all([
+        base44.entities.HealthMetric.filter({ created_by: user?.email }),
+        base44.entities.MoodEntry.filter({ created_by: user?.email }),
+        base44.entities.WorkoutLog.filter({ created_by: user?.email }),
+        base44.entities.MealLog.filter({ created_by: user?.email }),
+        base44.entities.AIConversation.filter({ created_by: user?.email }),
+      ]);
+      
+      await Promise.all([
+        ...metrics.map(m => base44.entities.HealthMetric.delete(m.id)),
+        ...moods.map(m => base44.entities.MoodEntry.delete(m.id)),
+        ...workouts.map(w => base44.entities.WorkoutLog.delete(w.id)),
+        ...meals.map(m => base44.entities.MealLog.delete(m.id)),
+        ...conversations.map(c => base44.entities.AIConversation.delete(c.id)),
+      ]);
+    },
+    onSuccess: () => {
+      base44.auth.logout();
+    },
+  });
+
   const menuItems = [
     { icon: Bell, label: "Notifications", action: () => {} },
     { icon: Shield, label: "Privacy", action: () => {} },
@@ -80,7 +107,7 @@ export default function Profile() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/30 to-purple-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50/30 to-purple-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <div className="max-w-lg mx-auto px-4 py-6 pb-24">
         {/* Header Card */}
         <motion.div
@@ -343,6 +370,7 @@ export default function Profile() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
+          className="space-y-3"
         >
           <Button
             variant="outline"
@@ -352,8 +380,66 @@ export default function Profile() {
             <LogOut className="w-5 h-5 mr-2" />
             Log Out
           </Button>
+
+          <Button
+            variant="outline"
+            onClick={() => setShowDeleteDialog(true)}
+            className="w-full py-6 rounded-2xl border-red-300 text-red-600 hover:bg-red-50"
+          >
+            <Trash2 className="w-5 h-5 mr-2" />
+            Delete Account
+          </Button>
         </motion.div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AnimatePresence>
+        {showDeleteDialog && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowDeleteDialog(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="w-full max-w-md bg-white dark:bg-slate-800 rounded-3xl p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 rounded-2xl bg-red-100 dark:bg-red-900/30">
+                  <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
+                </div>
+                <h2 className="text-xl font-bold text-slate-800 dark:text-white">Delete Account</h2>
+              </div>
+
+              <p className="text-slate-600 dark:text-slate-300 mb-6">
+                This action cannot be undone. All your health data, workouts, meals, mood entries, and AI conversations will be permanently deleted.
+              </p>
+
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowDeleteDialog(false)}
+                  className="flex-1 py-3 rounded-xl"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => deleteAccountMutation.mutate()}
+                  disabled={deleteAccountMutation.isPending}
+                  className="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white"
+                >
+                  {deleteAccountMutation.isPending ? "Deleting..." : "Delete Forever"}
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
