@@ -5,10 +5,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   User, Settings, Target, Ruler, Scale, Activity, 
   Moon, Droplets, Flame, Crown, ChevronRight, LogOut,
-  Bell, Shield, HelpCircle, Star, Trash2, AlertTriangle, Image
+  Bell, Shield, HelpCircle, Star, Trash2, AlertTriangle
 } from "lucide-react";
-import { Link } from "react-router-dom";
-import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -107,7 +105,6 @@ export default function Profile() {
     { icon: Bell, label: "Notifications", action: () => {} },
     { icon: Shield, label: "Privacy", action: () => {} },
     { icon: HelpCircle, label: "Help & Support", action: () => {} },
-    { icon: Image, label: "App Store Assets", link: "AppStoreAssets" },
   ];
 
   return (
@@ -379,27 +376,15 @@ export default function Profile() {
           className="bg-white rounded-3xl p-4 mb-6 shadow-xl shadow-black/5"
         >
           {menuItems.map((item, index) => (
-            item.link ? (
-              <Link
-                key={item.label}
-                to={createPageUrl(item.link)}
-                className="flex items-center gap-4 w-full p-3 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl transition-colors"
-              >
-                <item.icon className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-                <span className="flex-1 text-left text-slate-800 dark:text-white">{item.label}</span>
-                <ChevronRight className="w-5 h-5 text-slate-400" />
-              </Link>
-            ) : (
-              <button
-                key={item.label}
-                onClick={item.action}
-                className="flex items-center gap-4 w-full p-3 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl transition-colors"
-              >
-                <item.icon className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-                <span className="flex-1 text-left text-slate-800 dark:text-white">{item.label}</span>
-                <ChevronRight className="w-5 h-5 text-slate-400" />
-              </button>
-            )
+            <button
+              key={item.label}
+              onClick={item.action}
+              className="flex items-center gap-4 w-full p-3 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl transition-colors"
+            >
+              <item.icon className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+              <span className="flex-1 text-left text-slate-800 dark:text-white">{item.label}</span>
+              <ChevronRight className="w-5 h-5 text-slate-400" />
+            </button>
           ))}
         </motion.div>
 

@@ -1,7 +1,8 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { Home, Dumbbell, Utensils, Brain, Sparkles, User } from "lucide-react";
+import Header from "@/components/Header";
 
 const navItems = [
   { icon: Home, label: "Home", page: "Home" },
@@ -13,12 +14,23 @@ const navItems = [
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
+  const navigate = useNavigate();
   
   // Hide nav on AI Coach page for full-screen experience
   const hideNav = currentPageName === "AICoach";
 
+  const handleTabClick = (page) => {
+    if (currentPageName === page) {
+      // Reset to root page and scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      navigate(createPageUrl(page), { replace: true });
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+      <Header currentPageName={currentPageName} />
+      
       <motion.div
         key={currentPageName}
         initial={{ x: 300, opacity: 0 }}
@@ -38,11 +50,12 @@ export default function Layout({ children, currentPageName }) {
           <div className="max-w-lg mx-auto flex items-center justify-around py-2">
             {navItems.map((item) => {
               const isActive = currentPageName === item.page;
-              
+
               return (
                 <Link
                   key={item.page}
                   to={createPageUrl(item.page)}
+                  onClick={() => handleTabClick(item.page)}
                   className="relative flex flex-col items-center py-2 px-3"
                 >
                   <motion.div
@@ -50,13 +63,13 @@ export default function Layout({ children, currentPageName }) {
                     className={`p-2 rounded-xl transition-colors ${
                       isActive 
                         ? "bg-gradient-to-br from-rose-500 to-orange-500 text-white shadow-lg shadow-rose-500/30" 
-                        : "text-slate-400"
+                        : "text-slate-400 dark:text-slate-500"
                     }`}
                   >
                     <item.icon className="w-5 h-5" />
                   </motion.div>
                   <span className={`text-xs mt-1 font-medium ${
-                    isActive ? "text-rose-600" : "text-slate-400"
+                    isActive ? "text-rose-600 dark:text-rose-400" : "text-slate-400 dark:text-slate-500"
                   }`}>
                     {item.label}
                   </span>
