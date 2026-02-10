@@ -53,6 +53,7 @@ import Mind from './pages/Mind';
 import Nutrition from './pages/Nutrition';
 import Profile from './pages/Profile';
 import Workouts from './pages/Workouts';
+import AppStoreAssets from './pages/AppStoreAssets';
 import __Layout from './Layout.jsx';
 
 
@@ -63,6 +64,7 @@ export const PAGES = {
     "Nutrition": Nutrition,
     "Profile": Profile,
     "Workouts": Workouts,
+    "AppStoreAssets": AppStoreAssets,
 }
 
 export const pagesConfig = {
