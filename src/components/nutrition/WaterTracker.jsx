@@ -1,17 +1,21 @@
-import { useState, useOptimistic } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Droplets, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function WaterTracker({ current = 0, goal = 2500, onUpdate }) {
-  const [optimisticWater, setOptimisticWater] = useOptimistic(current);
+  const [optimisticWater, setOptimisticWater] = useState(current);
   const glassSize = 250; // ml per glass
-  const displayWater = optimisticWater || current;
-  const glasses = Math.floor(displayWater / glassSize);
-  const progress = Math.min((displayWater / goal) * 100, 100);
+  
+  useEffect(() => {
+    setOptimisticWater(current);
+  }, [current]);
+  
+  const glasses = Math.floor(optimisticWater / glassSize);
+  const progress = Math.min((optimisticWater / goal) * 100, 100);
 
   const addWater = (amount) => {
-    const newAmount = Math.max(0, displayWater + amount);
+    const newAmount = Math.max(0, optimisticWater + amount);
     setOptimisticWater(newAmount);
     onUpdate(newAmount);
   };
@@ -29,7 +33,7 @@ export default function WaterTracker({ current = 0, goal = 2500, onUpdate }) {
             <span className="text-sm font-medium text-slate-600">Water Intake</span>
           </div>
           <div className="flex items-baseline gap-1">
-            <span className="text-3xl font-bold text-slate-800">{displayWater}</span>
+            <span className="text-3xl font-bold text-slate-800">{optimisticWater}</span>
             <span className="text-slate-500">/ {goal} ml</span>
           </div>
         </div>
@@ -70,7 +74,7 @@ export default function WaterTracker({ current = 0, goal = 2500, onUpdate }) {
           size="sm"
           onClick={() => addWater(-glassSize)}
           className="flex-1 border-blue-200 text-blue-600 hover:bg-blue-50"
-          disabled={displayWater <= 0}
+          disabled={optimisticWater <= 0}
         >
           <Minus className="w-4 h-4 mr-1" />
           250ml
