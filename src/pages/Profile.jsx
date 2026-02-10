@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MobileSelect } from "@/components/ui/mobile-select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 
@@ -183,42 +184,64 @@ export default function Profile() {
             <div className="space-y-4">
               {/* Goal Selection */}
               <div>
-                <Label>Primary Goal</Label>
-                <Select
-                  value={formData.goal || ""}
-                  onValueChange={(val) => setFormData({ ...formData, goal: val })}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select your goal" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {goals.map((goal) => (
-                      <SelectItem key={goal.value} value={goal.value}>
-                        {goal.icon} {goal.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label className="dark:text-slate-300">Primary Goal</Label>
+                <div className="mt-1 md:hidden">
+                  <MobileSelect
+                    value={formData.goal || ""}
+                    onValueChange={(val) => setFormData({ ...formData, goal: val })}
+                    options={goals.map(g => ({ value: g.value, label: `${g.icon} ${g.label}` }))}
+                    placeholder="Select your goal"
+                    label="Primary Goal"
+                  />
+                </div>
+                <div className="mt-1 hidden md:block">
+                  <Select
+                    value={formData.goal || ""}
+                    onValueChange={(val) => setFormData({ ...formData, goal: val })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select your goal" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {goals.map((goal) => (
+                        <SelectItem key={goal.value} value={goal.value}>
+                          {goal.icon} {goal.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               {/* Activity Level */}
               <div>
-                <Label>Activity Level</Label>
-                <Select
-                  value={formData.activity_level || ""}
-                  onValueChange={(val) => setFormData({ ...formData, activity_level: val })}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select activity level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {activityLevels.map((level) => (
-                      <SelectItem key={level.value} value={level.value}>
-                        {level.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label className="dark:text-slate-300">Activity Level</Label>
+                <div className="mt-1 md:hidden">
+                  <MobileSelect
+                    value={formData.activity_level || ""}
+                    onValueChange={(val) => setFormData({ ...formData, activity_level: val })}
+                    options={activityLevels}
+                    placeholder="Select activity level"
+                    label="Activity Level"
+                  />
+                </div>
+                <div className="mt-1 hidden md:block">
+                  <Select
+                    value={formData.activity_level || ""}
+                    onValueChange={(val) => setFormData({ ...formData, activity_level: val })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select activity level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {activityLevels.map((level) => (
+                        <SelectItem key={level.value} value={level.value}>
+                          {level.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               {/* Body Metrics */}

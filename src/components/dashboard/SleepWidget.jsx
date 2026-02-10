@@ -17,7 +17,7 @@ export default function SleepWidget({ hours, quality, goal = 8 }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4 }}
-      className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-900 to-slate-900 p-5 text-white shadow-xl shadow-indigo-900/30"
+      className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-900 to-slate-900 dark:from-indigo-950 dark:to-slate-950 p-5 text-white shadow-xl shadow-indigo-900/30"
     >
       {/* Stars */}
       <div className="absolute inset-0 overflow-hidden">

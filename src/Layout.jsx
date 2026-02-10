@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Home, Dumbbell, Utensils, Brain, Sparkles, User } from "lucide-react";
 
 const navItems = [
@@ -18,8 +18,16 @@ export default function Layout({ children, currentPageName }) {
   const hideNav = currentPageName === "AICoach";
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {children}
+    <div className="min-h-screen bg-slate-50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+      <motion.div
+        key={currentPageName}
+        initial={{ x: 300, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: -300, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      >
+        {children}
+      </motion.div>
       
       {!hideNav && (
         <motion.nav

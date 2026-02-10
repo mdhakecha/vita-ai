@@ -9,7 +9,7 @@ export default function AIInsightCard({ insight, delay = 0 }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}
-      className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-50 to-orange-50 border border-rose-100 p-5"
+      className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-50 to-orange-50 dark:from-rose-950/30 dark:to-orange-950/30 border border-rose-100 dark:border-rose-900/30 p-5"
     >
       <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-rose-200/30 to-orange-200/30 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
       
@@ -21,7 +21,7 @@ export default function AIInsightCard({ insight, delay = 0 }) {
           <span className="text-sm font-semibold text-rose-700">AI Health Coach</span>
         </div>
 
-        <p className="text-slate-700 text-sm leading-relaxed mb-4">
+        <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed mb-4">
           {insight || "Based on your sleep data, I recommend a light 20-minute yoga session today and staying extra hydrated. Your body needs gentle recovery."}
         </p>
 

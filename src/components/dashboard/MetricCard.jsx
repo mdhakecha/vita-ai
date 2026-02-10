@@ -26,7 +26,7 @@ export default function MetricCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4 }}
-      className="relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-lg shadow-black/5 p-4"
+      className="relative overflow-hidden rounded-2xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-white/50 dark:border-slate-700/50 shadow-lg shadow-black/5 p-4"
     >
       <div className={cn("absolute inset-0 bg-gradient-to-br opacity-50", colorClasses[color])} />
       
@@ -43,16 +43,16 @@ export default function MetricCard({
         </div>
         
         <div className="space-y-1">
-          <p className="text-xs text-slate-500 font-medium uppercase tracking-wide">{label}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wide">{label}</p>
           <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-bold text-slate-800">{value?.toLocaleString() || 0}</span>
-            {unit && <span className="text-sm text-slate-500">{unit}</span>}
+            <span className="text-2xl font-bold text-slate-800 dark:text-white">{value?.toLocaleString() || 0}</span>
+            {unit && <span className="text-sm text-slate-500 dark:text-slate-400">{unit}</span>}
           </div>
         </div>
 
         {goal && (
           <div className="mt-3">
-            <div className="h-1.5 bg-slate-200/50 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-slate-200/50 dark:bg-slate-700/50 rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${progressPercent}%` }}

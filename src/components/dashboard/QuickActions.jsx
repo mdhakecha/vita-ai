@@ -33,7 +33,7 @@ export default function QuickActions() {
             <div className={`p-3 rounded-2xl bg-gradient-to-br ${action.color} text-white shadow-lg shadow-black/10 group-hover:scale-110 transition-transform duration-300`}>
               <action.icon className="w-6 h-6" />
             </div>
-            <span className="text-xs text-slate-600 font-medium mt-2">{action.label}</span>
+            <span className="text-xs text-slate-600 dark:text-slate-400 font-medium mt-2">{action.label}</span>
           </motion.div>
         </Link>
       ))}
